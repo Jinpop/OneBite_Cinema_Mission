@@ -66,6 +66,7 @@ export default function Page({
     company,
     genres,
     description,
+    posterImgUrl,
   } = movie;
 
   return (
@@ -74,7 +75,7 @@ export default function Page({
         <title>{title} | 한입 씨네마</title>
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:image" content="/thumbnail.png" />
+        <meta property="og:image" content={posterImgUrl} />
       </Head>
 
       <div className={style.container}>
