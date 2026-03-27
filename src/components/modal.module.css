@@ -1,0 +1,23 @@
+.modal {
+  width: min(920px, 92vw);
+  max-height: 92vh;
+  margin-top: 20px;
+  border: none;
+  border-radius: 12px;
+  padding: 20px;
+  background: white;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+.modal::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+@media (max-width: 760px) {
+  .modal {
+    width: 94vw;
+    margin-top: 10px;
+    padding: 14px;
+  }
+}
