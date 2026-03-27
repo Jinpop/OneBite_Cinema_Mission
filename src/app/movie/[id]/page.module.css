@@ -65,6 +65,32 @@
   white-space: pre-wrap;
 }
 
+.review_editor_section,
+.review_list_section {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid rgb(235, 235, 235);
+  padding: 16px;
+}
+
+.review_editor_section h2,
+.review_list_section h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+}
+
+.review_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.review_empty {
+  margin: 0;
+  color: rgb(120, 120, 120);
+}
+
 @media (max-width: 760px) {
   .poster_container {
     height: 340px;
@@ -76,5 +102,10 @@
 
   .info_section h1 {
     font-size: 28px;
+  }
+
+  .review_editor_section h2,
+  .review_list_section h2 {
+    font-size: 18px;
   }
 }

@@ -1,24 +1,21 @@
 import { notFound } from "next/navigation";
 import style from "./page.module.css";
-import type { MovieData } from "@/types";
+import type { MovieData, ReviewData } from "@/types";
+import ReviewEditor from "@/components/review-editor";
+import ReviewItem from "@/components/review-item";
 
 export const dynamicParams = false;
 
 async function fetchAllMovies(): Promise<MovieData[]> {
-  try {
-    const response = await fetch(`http://localhost:12345/movie`, {
-      cache: "force-cache",
-    });
+  const response = await fetch("http://localhost:12345/movie", {
+    cache: "force-cache",
+  });
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch all movies");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching all movies:", error);
+  if (!response.ok) {
     return [];
   }
+
+  return response.json();
 }
 
 export async function generateStaticParams() {
@@ -30,20 +27,43 @@ export async function generateStaticParams() {
 }
 
 async function fetchMovieById(id: number): Promise<MovieData | null> {
-  try {
-    const response = await fetch(`http://localhost:12345/movie/${id}`, {
-      cache: "force-cache",
-    });
+  const response = await fetch(`http://localhost:12345/movie/${id}`, {
+    cache: "force-cache",
+  });
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch movie");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching movie:", error);
+  if (!response.ok) {
     return null;
   }
+
+  return response.json();
+}
+
+async function fetchMovieReviews(movieId: number): Promise<ReviewData[]> {
+  const response = await fetch(`http://localhost:12345/review/movie/${movieId}`, {
+    next: { tags: [`review-${movieId}`] },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch reviews: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+async function ReviewList({ movieId }: { movieId: number }) {
+  const reviews = await fetchMovieReviews(movieId);
+
+  if (reviews.length === 0) {
+    return <p className={style.review_empty}>아직 등록된 리뷰가 없습니다.</p>;
+  }
+
+  return (
+    <div className={style.review_list}>
+      {reviews.map((review) => (
+        <ReviewItem key={`review-${review.id}`} {...review} />
+      ))}
+    </div>
+  );
 }
 
 export default async function MoviePage({
@@ -87,6 +107,16 @@ export default async function MoviePage({
           <span>{genres.join(" / ")}</span>
         </div>
         <p className={style.overview}>{description}</p>
+      </section>
+
+      <section className={style.review_editor_section}>
+        <h2>리뷰 작성</h2>
+        <ReviewEditor movieId={movie.id} />
+      </section>
+
+      <section className={style.review_list_section}>
+        <h2>리뷰 목록</h2>
+        <ReviewList movieId={movie.id} />
       </section>
     </div>
   );
