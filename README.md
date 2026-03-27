@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Onebite Cinema (App Router)
 
-## Getting Started
+한입 챌린지 미션 기반으로 구현한 Next.js App Router 프로젝트입니다.  
+영화 목록/검색/상세 페이지에 더해, 스트리밍(Suspense), 리뷰 서버 액션, 병렬 라우팅 인터셉팅 모달까지 반영했습니다.
 
-First, run the development server:
+## 구현 범위
+
+- Home (`/`)
+  - 추천 영화 + 전체 영화 섹션
+  - 섹션별 Suspense 스트리밍 적용
+- Search (`/search?q=...`)
+  - 검색 결과 렌더링
+  - 검색어 변경 시 스트리밍 재트리거
+- Movie (`/movie/[id]`)
+  - 영화 상세 정보 렌더링
+  - 리뷰 조회/작성/삭제 기능
+
+## 주요 기술 포인트
+
+1. 스트리밍(Suspense)
+- Home: 추천/전체 섹션을 각각 async 컴포넌트로 분리
+- Search: `Suspense key={keyword}`로 새 검색 시 fallback 재노출
+
+2. 서버 액션 리뷰 기능
+- 조회: `GET /review/movie/:movieId`
+- 작성: `POST /review` (Server Action)
+- 삭제: `DELETE /review/:reviewId` (Server Action)
+- 작성/삭제 후 `revalidateTag('review-{movieId}')`로 즉시 반영
+
+3. 캐시/렌더링 전략
+- Home: 정적 기반 + 재검증
+- Search: Dynamic 라우트 렌더링
+- Movie Detail: `generateStaticParams` 기반 SSG
+- Review List: fetch tag 캐시 무효화
+
+4. 병렬 라우팅 + 인터셉팅 모달
+- `@modal` 슬롯 + `(.)movie/[id]` 구성
+- CSR 이동: 상세 페이지 모달 오픈
+- 직접 URL 접근/새로고침: 전체 페이지 렌더링
+
+## 디렉토리 구조
+
+```bash
+src
+├─ app
+│  ├─ (with-searchbar)
+│  │  ├─ page.tsx
+│  │  └─ search/page.tsx
+│  ├─ @modal
+│  │  ├─ default.tsx
+│  │  └─ (.)movie/[id]/page.tsx
+│  ├─ movie/[id]/page.tsx
+│  └─ layout.tsx
+├─ actions
+│  ├─ create-review.action.ts
+│  └─ delete-review.action.ts
+├─ components
+│  ├─ modal.tsx
+│  ├─ review-editor.tsx
+│  ├─ review-item.tsx
+│  └─ ...
+├─ util/delay.ts
+└─ types.ts
+```
+
+## 실행 방법
+
+1. 백엔드 서버 실행 (`http://localhost:12345`)
+2. 프론트 실행
+
+```bash
+npm install
+npm run dev
+```
+
+브라우저: `http://localhost:3000`
+
+## 스크립트
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 참고
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 빌드 시 `<img>` 사용에 대한 Next.js 권장 경고가 표시될 수 있습니다.
