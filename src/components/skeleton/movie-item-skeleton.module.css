@@ -1,0 +1,50 @@
+.container {
+  display: block;
+}
+
+.poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgb(230, 230, 230) 0%,
+    rgb(244, 244, 244) 50%,
+    rgb(230, 230, 230) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+.title {
+  margin-top: 10px;
+  width: 78%;
+  height: 16px;
+  border-radius: 6px;
+  background: rgb(226, 226, 226);
+}
+
+.meta {
+  margin-top: 8px;
+  width: 60%;
+  height: 12px;
+  border-radius: 6px;
+  background: rgb(232, 232, 232);
+}
+
+.metaShort {
+  margin-top: 6px;
+  width: 45%;
+  height: 12px;
+  border-radius: 6px;
+  background: rgb(238, 238, 238);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
